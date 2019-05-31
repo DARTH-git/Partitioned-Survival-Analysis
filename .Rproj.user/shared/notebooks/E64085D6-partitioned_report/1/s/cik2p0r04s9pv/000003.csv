@@ -1,0 +1,3 @@
+"0","KM.os  <- survfit(Surv(time = os,  event = event.os)  ~ 1, data = data) # Kaplan-Meier fit for OS"
+"0","plot( KM.os,  main = paste(""Overall Survival""),   ylab = ""Survival probability"", xlab = ""Years"") # plot KM for OS"
+"0",""

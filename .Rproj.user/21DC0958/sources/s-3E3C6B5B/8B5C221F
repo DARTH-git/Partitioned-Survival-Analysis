@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1559323978787.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "8B5C221F",
+    "lastKnownWriteTime" : 1559326080,
+    "last_content_update" : 1559326080059,
+    "path" : "C:/Users/david rios/OneDrive - SickKids/PSM/partitioned_report_DR.Rmd",
+    "project_path" : "partitioned_report_DR.Rmd",
+    "properties" : {
+        "cursorPosition" : "146,14",
+        "scrollLine" : "142"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

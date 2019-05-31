@@ -1,0 +1,3 @@
+"0","KM.pfs <- survfit(Surv(time = pfs, event = event.pfs) ~ 1, data = data) # Kaplan-Meier fit for PFS"
+"0","plot(KM.pfs, main = paste(""Progression-Free Survival""), ylab = ""Survival probability"", xlab = ""Years"") # plot KM for PFS"
+"0",""

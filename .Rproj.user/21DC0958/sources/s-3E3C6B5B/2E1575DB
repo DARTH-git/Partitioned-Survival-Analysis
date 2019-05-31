@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1559324021978.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "91|1|112|0|\n114|68|134|0|\n",
+    "hash" : "0",
+    "id" : "2E1575DB",
+    "lastKnownWriteTime" : 1559325450,
+    "last_content_update" : 1559326053465,
+    "path" : "C:/Users/david rios/OneDrive - SickKids/PSM/SurvFunctions_final_DR.R",
+    "project_path" : "SurvFunctions_final_DR.R",
+    "properties" : {
+        "cursorPosition" : "113,0",
+        "scrollLine" : "63"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

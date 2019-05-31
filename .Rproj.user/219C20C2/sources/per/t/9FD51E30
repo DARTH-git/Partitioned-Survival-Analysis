@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1559326534284.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "88634637",
+    "id" : "9FD51E30",
+    "lastKnownWriteTime" : 1559326761,
+    "last_content_update" : 1559326761314,
+    "path" : "C:/Users/Alan Yang/SickKids/Juan David Rios - PSM/Partitioned_Report.Rmd",
+    "project_path" : "Partitioned_Report.Rmd",
+    "properties" : {
+        "cursorPosition" : "233,39",
+        "scrollLine" : "221"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

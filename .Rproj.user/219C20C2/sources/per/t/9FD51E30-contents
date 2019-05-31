@@ -1,0 +1,242 @@
+---
+title: "Report on Partitioned Survival Analysis with Cost-Effectiveness Analysis and Probabilistic Sensitivity Analysis"
+author: "Alan Yang"
+date: "May 24, 2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+## Preparation
+
+Below we load the R packages required to conduct the analysis 
+
+```{r,echo=T,eval=T,include=F}
+rm(list=ls())
+
+if (!require(survival)) install.packages('survival'); library(survival)
+if (!require(flexsurv)) install.packages('flexsurv'); library(flexsurv)
+if (!require(MASS)) install.packages('MASS'); library(MASS)
+if (!require(DAAG)) install.packages('DAAG'); library(DAAG)
+if (!require(knitr)) install.packages('knitr'); library(knitr)
+
+```
+
+We have created an R file with the custom functions created by our group that are specific to survival analysis in decision modeling. Briefly  there are two main functions. ` fit.fun` is the function that fits a number of parametric survival models to the data, estimates the Akaike and bayesian information criterion and stores all the output on a list of survival models and their goodness of fit. The code below reads in the function file with survival fitting, partitioned survival and microsimulation functions. Information on using the functions in the `SurvFunctions_final.R` file can be found in each function. 
+
+```{r,echo=T,eval=T,warning=FALSE,cache=T, message=F}
+source("SurvFunctions_final_DR.R")
+
+```
+
+Next we read in the simulated dataset. This dataset contains 140 patients with their overall survival time (variable 'os') and progression free survival time (variable 'pfs') as well as whether they experienced mortality  (variable 'event.os') or progression (variable 'event.pfs') with administrative censoring at 5 years. The first 6 observations of the dataset are displayed below:
+
+The patient is censored for a particular event if the patient's event variable ('event.os' or 'event.pfs') = 0.
+
+```{r,echo = T,eval = T,warning = FALSE,cache = T, message = F}
+data      <- read.csv('data.cens.csv', header = T)
+head_data <- head(data)
+kable(head_data)
+
+```
+
+In this report, for simplicity, the state names 'Progression-free' and 'stable' are interchangeable, 'Progression' and 'progressed' are interchangeable, and 'Death' and 'Dead' are interchangeable. 
+
+## Method No.1: Partitioned Survival Model
+
+**Step 1 : Descriptive statistics to the survival data - treatment arm** 
+
+The function below draws a Kaplan-Meier plot for progression-free survival (PFS):
+
+```{r,echo=T,eval=T,warning=FALSE,cache=T, message=F}
+KM.pfs <- survfit(Surv(time = pfs, event = event.pfs) ~ 1, data = data) # Kaplan-Meier fit for PFS
+plot(KM.pfs, main = paste("Progression-Free Survival"), ylab = "Survival probability", xlab = "Years") # plot KM for PFS
+
+```
+
+Similarly we can draw a Kaplan-Meier plot for overall survival (OS):
+
+```{r,echo=T,eval=T,warning=FALSE,cache=T, message=F}
+KM.os  <- survfit(Surv(time = os,  event = event.os)  ~ 1, data = data) # Kaplan-Meier fit for OS
+plot( KM.os,  main = paste("Overall Survival"),   ylab = "Survival probability", xlab = "Years") # plot KM for OS
+
+```
+
+**Step 2 : Fit different parametric survivor functions to the data**
+
+First the following parameters that relate to the partitioned survival model (PSM) are defined:
+
+```{r,echo=T,eval=T,warning=FALSE,cache=T, message=F}
+v.n            <- c("Stable","Progressed","Dead") # state names
+n.s            <- length(v.n)    # number of states
+n.t            <- 60             # number of cycles to run
+c.l            <- 1 / 12         # cycle length (a month)
+n.psa          <- 10000          # number of PSA simulations
+# Costs and utilities  
+c.S    <- 400                     # cost of remaining one cycle stable
+c.P    <- 100                     # cost of remaining one cycle progressed
+c.D    <- 0                       # cost of remaining one cycle dead
+u.S    <- 0.8                     # utility when stable 
+u.P    <- 0.5                     # utility when progressed
+u.D    <- 0                       # utility when dead
+d.r    <- 0.03                    # discount rate per cycle, same for costs and effectiveness
+times  <- seq(from = 0, to = n.t, by = c.l)  # sequence of times to be considered in the model
+
+v.dwc  <- 1 / (1 + d.r) ^ (times) # calculate discount weights for costs for each cycle based on discount rate d.r
+v.dwe  <- 1 / (1 + d.r) ^ (times) # calculate discount weights for effectiveness for each cycle based on discount rate d.r
+
+```
+
+The parametric survival functions fitted are:
+
+- the log-logistic survivor function
+
+- the Weibull survivor function
+
+- the log-normal survivor function
+
+- the Gamma survivor function
+
+- the Exponential survivor function
+
+For PFS:
+
+```{r,echo=T,eval=T,warning=FALSE,cache=T, message=F}
+fit.pfs  <- fit.fun(time = "pfs", event = "event.pfs", data = data) 
+
+```
+
+For OS:
+
+```{r,echo=T,eval=T,warning=FALSE,cache=T, message=F}
+fit.os  <- fit.fun( time = "os", event = "event.os", data = data)  
+
+```
+
+**Step 3: Select the best fitting survivor function and compare it against the Kaplan-Meier curve**
+
+For PFS:
+
+In this example the Weibull survivor function hsa been identified as the best-fitting function.
+
+```{r,echo=T,eval=T,warning=FALSE,cache=T, message=F}
+best.pfs <- fit.pfs$Weibull   
+plot(KM.pfs, ylab = "Survival Probability", xlab = "Time",  main = paste ("True vs Fitted PFS")) 
+lines(best.pfs,  col = 2, t = times, lty = 2)     
+
+```
+
+For OS:
+
+In this example The Weibull survivor function was identified as the best-fitting function.
+
+```{r,echo=T,eval=T,warning=FALSE,cache=T, message=F}
+best.os <- fit.os$Weibull 
+plot(KM.os, ylab = "Survival Probability", xlab = "Time",  main = c("True vs Fitted OS"))
+lines(best.os,  col = 2, t = times, lty = 2)    
+
+```
+
+**Step 4: Fit partitioned survival model and plot the Markov trace**
+
+Once the best fitting models for OS and PFS have been identified we can use the function partsurv which uses these two models as input, extracts the coefficients from these models and calculates the survival probability for a sepcified time horizon. Subsequently, it allocates the cohort across the three states on the basis of the probabilities of occupying each state. The output of the function is a markov trace, whcih we plot in the section below.
+
+```{r,echo=T,eval=T,warning=FALSE,cache=T, message=F}
+surv <-partsurv(best.pfs, best.os, title = "all", time= times)
+
+M.tr <- as.matrix(surv$trace)                       
+matplot(M.tr, type = 'l', lty=1)                      
+legend("right", v.n, col=1:n.s, lty=rep(1,n.s), bty='n')
+
+```
+
+**Step 5: Compute Cost-Effectiveness Outcomes**
+
+The costs, utilities and discount rates are defined:
+
+ We can compute total costs and total utilities per cycle  by defining two vectors (one for cost per state and one for utility per state) and using matrix multiplication to multiply those with the markov trace.  (note that matrix multiplication is used to speed things up and save code lines. if too complicated it can always be replaced with multiplication and summation although not a pretty solution)
+We further calculate discounted total costs and QALYs
+
+```{r,echo=T,eval=T,warning=FALSE,cache=T, message=F}
+# Mean Costs and QALYs per cycle
+v.tc <- M.tr %*% c(c.S, c.P, c.D)  # calculate expected costs by multiplying m.M with the cost vector for the different health states   
+v.tu <- M.tr %*% c(u.S, u.P, u.D)  # calculate expected QALYs by multiplying m.M with the utilities for the different health states  
+
+# Discounted Mean Costs and QALYs
+v.tc.d <-  t(v.tc) %*% v.dwc   # Discount costs by multiplying the cost vector with discount weights (v.dwc) 
+v.te.d <-  t(v.tu) %*% v.dwe *c.l   # Discount QALYS by multiplying the QALYs vector with discount weights (v.dwe)
+
+results <- data.frame( "Total Discounted Cost" = v.tc.d, 
+                       "Total Discounted QALYs" = v.te.d, 
+                       check.names = F)
+kable(results)
+
+```
+
+## Probabilistic Sensitivity Analysis in Partitioned Survival Analysis
+
+To begin, we generate correlated parameter values from a multivariate normal distribution from the parameters of the best fitting PFS distribution
+
+
+We then do the same for the OS distribution
+for each simulation:
+
+- calculate the survival probabilities using the generated correlated multivariate normal parameters for PFS and OS
+
+- estimate the probability of remaining progression-free, the probability of being dead, and the probability of remaining in the progressed state
+
+- use the probabilities to construct the Markov trace
+
+- calculate the discounted mean costs and utilies and store them
+
+
+We use the `r normboot.flexsurvreg' function to generate the parameters for the PSA
+```{r,echo=T,eval=T,warning=FALSE,cache=T, message=F}
+# generate correlated values from a mutlivariate normal distribution for PFS and OS.
+psa.pfs <- normboot.flexsurvreg(x = best.pfs,n.psa)
+psa.os  <- normboot.flexsurvreg(x = best.os,n.psa)
+
+# vectors to store the total costs and total utilities from each simulation
+TC <- TE <- c()
+
+for (i in 1:n.psa) {
+  # at each simulation, draw a sample of the parameters (shape and scale) from the best-fitting survivor distribution for PSA and OS
+  pfs.surv <- best.pfs$dfns$p(times, psa.pfs[i,1], psa.pfs[i,2], lower.tail = F)
+  os.surv  <- best.pfs$dfns$p(times, psa.os[i,1],   psa.os[i,2], lower.tail = F)
+  
+  prog            <- os.surv - pfs.surv          # estimate the probability of remaining in the progressed state
+  prog[prog < 0]  <- 0                           # in cases where the probability is negative replace with zero
+  s               <- pfs.surv                    # probability of remaining stable
+  d               <- 1 - os.surv                 # probability of being dead
+  
+  M.tr <- as.matrix(data.frame(S = s, P = prog, D = d))
+  
+  # Compute Cost-Effectiveness Outcomes
+  # Mean Costs and QALYs per cycle
+  v.tc <- M.tr %*% c(c.S, c.P, c.D)  # calculate expected costs by multiplying m.M with the cost vector for the different health states   
+  v.tu <- M.tr %*% c(u.S, u.P, u.D)  # calculate expected QALYs by multiplying m.M with the utilities for the different health states  
+  
+  # Discounted Mean Costs and QALYs
+  v.tc.d <-  t(v.tc) %*% v.dwc   # Discount costs  by multiplying the cost vector with discount weights (v.dwc) 
+  v.te.d <-  t(v.tu) %*% v.dwe * c.l   # Discount QALYS  by multiplying the QALYs vector with discount weights (v.dwe)
+  
+  TC <- c(TC, v.tc.d)
+  TE <- c(TE, v.te.d)
+}
+
+```
+
+Finally, we calculate the  mean total costs and the mean total utilities:
+
+```{r,echo=T,eval=T,warning=FALSE,cache=T, message=F}
+results <- data.frame( "Mean Total Discounted Cost" = mean(TC), 
+                       "Mean Total Discounted QALYs" = mean(TE), 
+                       check.names = F)
+
+kable(results)
+
+```
+
+
+
+
