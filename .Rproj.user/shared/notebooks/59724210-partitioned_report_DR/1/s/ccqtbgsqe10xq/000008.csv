@@ -1,3 +1,0 @@
-"0","data      <- read.csv('data.cens.csv', header = T)"
-"0","head_data <- head(data)"
-"0","kable(head_data)"

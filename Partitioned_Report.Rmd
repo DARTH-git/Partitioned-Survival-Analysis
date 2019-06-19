@@ -34,11 +34,11 @@ Below we load the R packages required to conduct the analysis
 ```{r,echo=T,eval=T,include=F}
 rm(list=ls())
 
-if (!require(survival)) install.packages('survival'); library(survival)
-if (!require(flexsurv)) install.packages('flexsurv'); library(flexsurv)
-if (!require(MASS)) install.packages('MASS'); library(MASS)
-if (!require(DAAG)) install.packages('DAAG'); library(DAAG)
-if (!require(knitr)) install.packages('knitr'); library(knitr)
+if (!require(survival)) install.packages('survival', repos = "http://cran.us.r-project.org"); library(survival)
+if (!require(flexsurv)) install.packages('flexsurv', repos = "http://cran.us.r-project.org"); library(flexsurv)
+if (!require(MASS)) install.packages('MASS',         repos = "http://cran.us.r-project.org"); library(MASS)
+if (!require(DAAG)) install.packages('DAAG',         repos = "http://cran.us.r-project.org"); library(DAAG)
+if (!require(knitr)) install.packages('knitr',       repos = "http://cran.us.r-project.org"); library(knitr)
 
 ```
 
@@ -257,6 +257,11 @@ kable(results)
 
 ```
 
+Compile the R code in this report to a R script.
 
+```{r, echo=T, message=FALSE, results='hide', purl=FALSE}
+knitr::purl("Partitioned_Report.Rmd", documentation = 0)
+
+```
 
 

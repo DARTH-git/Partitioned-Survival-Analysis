@@ -1,0 +1,33 @@
+"0","rm(list=ls())"
+"0",""
+"0","if (!require(survival)) install.packages('survival'); library(survival)"
+"2","Loading required package: survival
+"
+"0","if (!require(flexsurv)) install.packages('flexsurv'); library(flexsurv)"
+"2","Loading required package: flexsurv
+"
+"0","if (!require(MASS)) install.packages('MASS'); library(MASS)"
+"2","Loading required package: MASS
+"
+"0","if (!require(DAAG)) install.packages('DAAG'); library(DAAG)"
+"2","Loading required package: DAAG
+"
+"2","Loading required package: lattice
+"
+"2","
+Attaching package: ‘DAAG’
+
+"
+"2","The following object is masked from ‘package:MASS’:
+
+    hills
+
+"
+"2","The following object is masked from ‘package:survival’:
+
+    lung
+
+"
+"0","if (!require(knitr)) install.packages('knitr'); library(knitr)"
+"2","Loading required package: knitr
+"

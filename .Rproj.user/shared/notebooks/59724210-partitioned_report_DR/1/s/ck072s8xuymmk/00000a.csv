@@ -1,2 +1,0 @@
-"0","best.pfs <- fit.pfs$Weibull   "
-"0","plot(KM.pfs, ylab = ""Survival Probability"", xlab = ""Time"",  main = paste (""True vs Fitted PFS"")) # plot true KM PFS"

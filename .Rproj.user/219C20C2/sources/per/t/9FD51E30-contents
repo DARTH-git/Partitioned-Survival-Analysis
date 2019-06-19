@@ -1,11 +1,31 @@
 ---
 title: "Report on Partitioned Survival Analysis with Cost-Effectiveness Analysis and Probabilistic Sensitivity Analysis"
-author: "Alan Yang"
-date: "May 24, 2019"
+author: 
+- "Fernando Alarid-Escudero, PhD (1)" 
+- "Eva A. Enns, MS, PhD (1)"	
+- "M.G. Myriam Hunink, MD, PhD (2,3)"
+- "Hawre J. Jalal, MD, PhD (4)" 
+- "Eline M. Krijkamp, MSc (2)"
+- "Petros Pechlivanoglou, PhD (5)"
+- "David Rios, MA (5)"
+- "Alan Yang, MSc (5)"
+date: "May 31, 2019"
 output:
   html_document: default
   pdf_document: default
 ---
+
+In collaboration of: 		
+
+1 University of Minnesota School of Public Health, Minneapolis, MN, USA
+
+2 Erasmus MC, Rotterdam, The Netherlands
+
+3 Harvard T.H. Chan School of Public Health, Boston, USA
+
+4 University of Pittsburgh Graduate School of Public Health, Pittsburgh, PA, USA
+
+5 The Hospital for Sick Children, Toronto and University of Toronto, Toronto ON, Canada
 
 ## Preparation
 
@@ -14,18 +34,18 @@ Below we load the R packages required to conduct the analysis
 ```{r,echo=T,eval=T,include=F}
 rm(list=ls())
 
-if (!require(survival)) install.packages('survival'); library(survival)
-if (!require(flexsurv)) install.packages('flexsurv'); library(flexsurv)
-if (!require(MASS)) install.packages('MASS'); library(MASS)
-if (!require(DAAG)) install.packages('DAAG'); library(DAAG)
-if (!require(knitr)) install.packages('knitr'); library(knitr)
+if (!require(survival)) install.packages('survival', repos = "http://cran.us.r-project.org"); library(survival)
+if (!require(flexsurv)) install.packages('flexsurv', repos = "http://cran.us.r-project.org"); library(flexsurv)
+if (!require(MASS)) install.packages('MASS',         repos = "http://cran.us.r-project.org"); library(MASS)
+if (!require(DAAG)) install.packages('DAAG',         repos = "http://cran.us.r-project.org"); library(DAAG)
+if (!require(knitr)) install.packages('knitr',       repos = "http://cran.us.r-project.org"); library(knitr)
 
 ```
 
-We have created an R file with the custom functions created by our group that are specific to survival analysis in decision modeling. Briefly  there are two main functions. ` fit.fun` is the function that fits a number of parametric survival models to the data, estimates the Akaike and bayesian information criterion and stores all the output on a list of survival models and their goodness of fit. The code below reads in the function file with survival fitting, partitioned survival and microsimulation functions. Information on using the functions in the `SurvFunctions_final.R` file can be found in each function. 
+We have created an R file with the custom functions created by our group that are specific to survival analysis in decision modeling. Briefly there are two main functions. ` fit.fun` is the function that fits a number of parametric survival models to the data, estimates the Akaike and bayesian information criterion and stores all the output on a list of survival models and their goodness of fit. The code below reads in the function file with survival fitting, partitioned survival and microsimulation functions. Information on using the functions in the `SurvFunctions_final.R` file can be found in each function. 
 
 ```{r,echo=T,eval=T,warning=FALSE,cache=T, message=F}
-source("SurvFunctions_final_DR.R")
+source("SurvFunctions_final.R")
 
 ```
 
@@ -237,6 +257,11 @@ kable(results)
 
 ```
 
+Compile the R code in this report to a R script.
 
+```{r, echo=T, message=FALSE, results='hide', purl=FALSE}
+knitr::purl("Partitioned_Report.Rmd", documentation = 0)
+
+```
 
 

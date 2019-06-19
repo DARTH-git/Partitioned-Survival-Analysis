@@ -1,4 +1,0 @@
-"0","data      <- read.csv('data.cens.csv', header = T)
-"
-"2","Error in file(file, ""rt"") : cannot open the connection
-"
