@@ -9,6 +9,7 @@ if (!require(knitr)) install.packages('knitr',       repos = "http://cran.us.r-p
 
 source("SurvFunctions_final.R")
 
+# test
 
 data      <- read.csv('data.cens.csv', header = T)
 head_data <- head(data)
